@@ -21,13 +21,19 @@ class _ProfileState extends State<Profile> {
   }
 
   void getCCStats() async {
-    final userData = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-    var url = Uri.parse('https://codechef-api.vercel.app/${userData['ccusername']}');
+    final userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    var url =
+        Uri.parse('https://codechef-api.vercel.app/${userData['ccusername']}');
     NetWorkHelper netWorkHelper = NetWorkHelper(url);
     var ccData = await netWorkHelper.getData();
-    setState(() {
-      ccranking = ccData['currentRating'];
-    });
+    setState(
+      () {
+        ccranking = ccData['currentRating'];
+      },
+    );
   }
 
   @override
@@ -47,7 +53,7 @@ class _ProfileState extends State<Profile> {
       ),
       body: Center(
         child: ccranking != null
-            ? Text('Profile: $ccranking')
+            ? Text('CodeChef: $ccranking')
             : const CircularProgressIndicator(), // Show a loading indicator while fetching data
       ),
     );
