@@ -1,9 +1,9 @@
+import 'package:codefever/widgets/table.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codefever/services/networkhelper.dart';
 import 'dart:io';
-import 'package:percent_indicator/percent_indicator.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -225,207 +225,109 @@ class _ProfileState extends State<Profile> {
         ],
       ),
       body: Center(
-          child: Column(
-        children: [
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              const SizedBox(width: 24),
-              CircleAvatar(
-                radius: 60,
-                backgroundImage: NetworkImage(userImage != null
-                    ? userImage!
-                    : 'https://cdn.vectorstock.com/i/preview-1x/70/84/default-avatar-profile-icon-symbol-for-website-vector-46547084.jpg'),
-              ),
-              const SizedBox(width: 40),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    userName ?? '',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Row(
-                    children: [
-                      Column(
-                        children: [
-                          Text('0'),
-                          Text(
-                            'Followers',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 16),
-                      Column(
-                        children: [
-                          Text('0'),
-                          Text(
-                            'Following',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.update),
-                label: const Text('Update Profile'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32.0),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              ElevatedButton.icon(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                },
-                icon: const Icon(Icons.logout),
-                label: const Text('Logout'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32.0),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Container(
-            margin: const EdgeInsets.symmetric(
-                horizontal: 16), // Add margin to the table
-            decoration: BoxDecoration(
-              border: Border.all(),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Table(
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        child: Column(
+          children: [
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TableRow(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  children: const [
-                    TableCell(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Center(
-                            child: Text(
-                          'CodeChef',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        )),
-                      ),
-                    ),
-                    TableCell(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Center(
-                            child: Text(
-                          'CodeForces',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        )),
-                      ),
-                    ),
-                    TableCell(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Center(
-                            child: Text(
-                          'LeetCode',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        )),
-                      ),
-                    ),
-                  ],
+                const SizedBox(width: 24),
+                CircleAvatar(
+                  radius: 60,
+                  backgroundImage: NetworkImage(userImage != null
+                      ? userImage!
+                      : 'https://cdn.vectorstock.com/i/preview-1x/70/84/default-avatar-profile-icon-symbol-for-website-vector-46547084.jpg'),
                 ),
-                TableRow(
+                const SizedBox(width: 24),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    TableCell(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: isCCLoading
-                            ? CircularPercentIndicator(
-                                radius: 8.0,
-                                lineWidth: 2.0,
-                                percent: 1.0,
-                                progressColor: Colors.blue,
-                              )
-                            : Center(
-                                child: ccranking != null
-                                    ? Text('$ccranking')
-                                    : noCC
-                                        ? const Text('-')
-                                        : const Text('Invalid User')),
-                      ),
+                    Column(
+                      children: [
+                        Text('0'),
+                        Text(
+                          'Followers',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ],
                     ),
-                    TableCell(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: isCFLoading
-                            ? CircularPercentIndicator(
-                                radius: 8.0,
-                                lineWidth: 2.0,
-                                percent: 1.0,
-                                progressColor: Colors.blue,
-                              )
-                            : Center(
-                                child: cfranking != null
-                                    ? Text('$cfranking')
-                                    : noCF
-                                        ? const Text('-')
-                                        : const Text('Invalid User')),
-                      ),
-                    ),
-                    TableCell(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: isLCLoading
-                            ? CircularPercentIndicator(
-                                radius: 8.0,
-                                lineWidth: 2.0,
-                                percent: 1.0,
-                                progressColor: Colors.blue,
-                              )
-                            : Center(
-                                child: lcrankingint != null
-                                    ? Text('$lcrankingint')
-                                    : noLC
-                                        ? const Text('-')
-                                        : const Text('Invalid User'),
-                              ),
-                      ),
-                    ),
+                    SizedBox(width: 24),
+                    Column(
+                      children: [
+                        Text('0'),
+                        Text(
+                          'Following',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ],
             ),
-          ),
-        ],
-      )),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.only(right: 16, left: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.update),
+                      label: const Text('Update Profile'),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                      },
+                      icon: const Icon(Icons.logout),
+                      label: const Text('Logout'),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              margin: const EdgeInsets.symmetric(
+                  horizontal: 16), // Add margin to the table
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TableWidget(
+                isCCLoading: isCCLoading,
+                ccranking: ccranking,
+                isCFLoading: isCFLoading,
+                cfranking: cfranking,
+                isLCLoading: isLCLoading,
+                lcrankingint: lcrankingint,
+                noCC: noCC,
+                noCF: noCF,
+                noLC: noLC,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
