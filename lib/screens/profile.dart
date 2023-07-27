@@ -6,7 +6,13 @@ import 'package:codefever/services/networkhelper.dart';
 import 'dart:io';
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
+  const Profile(
+      {super.key,
+      required this.isDarkModeEnabled,
+      required this.toggleDarkMode});
+
+  final bool isDarkModeEnabled;
+  final void Function() toggleDarkMode;
 
   @override
   State<Profile> createState() {
@@ -19,6 +25,7 @@ class _ProfileState extends State<Profile> {
   dynamic userData;
   String? userName;
   String? userImage;
+  String? ccstars;
   int? cfranking;
   int? ccranking;
   int? lcrankingint;
@@ -85,6 +92,7 @@ class _ProfileState extends State<Profile> {
         () {
           isCCLoading = false;
           ccranking = ccData['currentRating'];
+          ccstars = ccData['stars'];
         },
       );
       await FirebaseFirestore.instance
@@ -93,6 +101,7 @@ class _ProfileState extends State<Profile> {
           .update(
         {
           'ccranking': ccranking,
+          'ccstars': ccstars,
         },
       );
     } on SocketException catch (e) {
@@ -211,12 +220,24 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  void toggleTheme() {
+    setState(() {
+      widget.toggleDarkMode();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(userName ?? 'Profile'),
         actions: [
+          IconButton(
+            icon: Icon(widget.isDarkModeEnabled
+                ? Icons.wb_sunny
+                : Icons.nightlight_round),
+            onPressed: toggleTheme,
+          ),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.refresh),
@@ -249,7 +270,7 @@ class _ProfileState extends State<Profile> {
                         Text(
                           'Followers',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                              fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ],
                     ),
@@ -260,7 +281,7 @@ class _ProfileState extends State<Profile> {
                         Text(
                           'Following',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                              fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ],
                     )
@@ -306,24 +327,74 @@ class _ProfileState extends State<Profile> {
               ),
             ),
             const SizedBox(height: 24),
-            Container(
-              margin: const EdgeInsets.symmetric(
-                  horizontal: 16), // Add margin to the table
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TableWidget(
-                isCCLoading: isCCLoading,
-                ccranking: ccranking,
-                isCFLoading: isCFLoading,
-                cfranking: cfranking,
-                isLCLoading: isLCLoading,
-                lcrankingint: lcrankingint,
-                noCC: noCC,
-                noCF: noCF,
-                noLC: noLC,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 8, bottom: 8, left: 24),
+                  child: Text(
+                    'Rating',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 16), // Add margin to the table
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TableWidget(
+                    isCCLoading: isCCLoading,
+                    ccranking: ccranking,
+                    ccstars: ccstars,
+                    isCFLoading: isCFLoading,
+                    cfranking: cfranking,
+                    isLCLoading: isLCLoading,
+                    lcrankingint: lcrankingint,
+                    noCC: noCC,
+                    noCF: noCF,
+                    noLC: noLC,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 8, bottom: 8, left: 24),
+                  child: Text(
+                    'Status of Total Submissions',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 16), // Add margin to the table
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TableWidget(
+                    isCCLoading: isCCLoading,
+                    ccranking: ccranking,
+                    ccstars: ccstars,
+                    isCFLoading: isCFLoading,
+                    cfranking: cfranking,
+                    isLCLoading: isLCLoading,
+                    lcrankingint: lcrankingint,
+                    noCC: noCC,
+                    noCF: noCF,
+                    noLC: noLC,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

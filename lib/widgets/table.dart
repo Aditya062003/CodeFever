@@ -6,6 +6,7 @@ class TableWidget extends StatelessWidget {
     super.key,
     required this.isCCLoading,
     required this.ccranking,
+    required this.ccstars,
     required this.isCFLoading,
     required this.cfranking,
     required this.isLCLoading,
@@ -17,6 +18,7 @@ class TableWidget extends StatelessWidget {
 
   final bool isCCLoading;
   final int? ccranking;
+  final String? ccstars;
   final bool isCFLoading;
   final int? cfranking;
   final bool isLCLoading;
@@ -42,7 +44,7 @@ class TableWidget extends StatelessWidget {
                 child: Center(
                     child: Text(
                   'CodeChef',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black),
                 )),
               ),
             ),
@@ -52,7 +54,7 @@ class TableWidget extends StatelessWidget {
                 child: Center(
                     child: Text(
                   'CodeForces',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black),
                 )),
               ),
             ),
@@ -62,7 +64,7 @@ class TableWidget extends StatelessWidget {
                 child: Center(
                     child: Text(
                   'LeetCode',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black),
                 )),
               ),
             ),
@@ -82,7 +84,7 @@ class TableWidget extends StatelessWidget {
                       )
                     : Center(
                         child: ccranking != null
-                            ? Text('$ccranking')
+                            ? Text('$ccranking - $ccstars')
                             : noCC
                                 ? const Text('-')
                                 : const Text('Invalid User')),

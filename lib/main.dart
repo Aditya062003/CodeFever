@@ -57,18 +57,18 @@ class _MyAppState extends State<MyApp> {
             foregroundColor: kDarkColorScheme.onPrimaryContainer,
           ),
         ),
-        textTheme: ThemeData().textTheme.copyWith(
-              titleLarge: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: kDarkColorScheme.onSecondaryContainer,
-                fontSize: 16,
-              ),
-              titleSmall: TextStyle(
-                // fontWeight: FontWeight.bold,
-                color: kDarkColorScheme.onSecondaryContainer,
-                // fontSize: 16,
-              ),
-            ),
+        // textTheme: ThemeData().textTheme.copyWith(
+        //       titleLarge: TextStyle(
+        //         fontWeight: FontWeight.bold,
+        //         color: kDarkColorScheme.onSecondaryContainer,
+        //         fontSize: 16,
+        //       ),
+        //       titleSmall: TextStyle(
+        //         // fontWeight: FontWeight.bold,
+        //         color: kDarkColorScheme.onSecondaryContainer,
+        //         // fontSize: 16,
+        //       ),
+        //     ),
       ),
       theme: ThemeData().copyWith(
         useMaterial3: true,
@@ -87,23 +87,19 @@ class _MyAppState extends State<MyApp> {
             backgroundColor: kColorScheme.primaryContainer,
           ),
         ),
-        textTheme: ThemeData().textTheme.copyWith(
-              titleLarge: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: kColorScheme.onSecondaryContainer,
-                fontSize: 16,
-              ),
-            ),
       ),
       themeMode: isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const SplashScreen();
           }
           if (snapshot.hasData) {
-            return const VerifyEmailScreen();
+            return VerifyEmailScreen(
+              isDarkModeEnabled: isDarkModeEnabled,
+              toggleDarkMode: toggleDarkMode,
+            );
           }
           return const AuthScreen();
         },

@@ -4,7 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
-  const VerifyEmailScreen({Key? key}) : super(key: key);
+  const VerifyEmailScreen(
+      {super.key,
+      required this.isDarkModeEnabled,
+      required this.toggleDarkMode});
+
+  final bool isDarkModeEnabled;
+  final void Function() toggleDarkMode;
 
   @override
   State<StatefulWidget> createState() => _VerifyEmailScreenState();
@@ -23,7 +29,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     if (!_isVerified) {
       sendVerificationEmail();
       _timer = Timer.periodic(
-          const Duration(seconds: 3), (_) => chechIsEmailVerified());
+          const Duration(seconds: 3), (_) => checkIsEmailVerified());
     }
   }
 
@@ -54,7 +60,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     }
   }
 
-  Future chechIsEmailVerified() async {
+  Future checkIsEmailVerified() async {
     final user = FirebaseAuth.instance.currentUser!;
     await user.reload();
     if (user.emailVerified) {
@@ -68,13 +74,17 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return _isVerified
-        ? const Profile()
+        ? Profile(
+            isDarkModeEnabled: widget.isDarkModeEnabled,
+            toggleDarkMode: widget.toggleDarkMode,
+          )
         : Scaffold(
             appBar: AppBar(
               title: const Text('Verify Email'),
             ),
             body: Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
                     'A verification email has been sent to your email.',
