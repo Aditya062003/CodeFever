@@ -23,6 +23,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _enteredCCUsername = '';
   var _enteredLCUsername = '';
   var _enteredCFUsername = '';
+  var _enteredGHUsername = '';
   File? _selectedImage;
   var _isAuthenticating = false;
 
@@ -64,6 +65,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .doc(userCredentials.user!.uid)
             .set({
           'username': _enteredUsername,
+          'ghusername': _enteredGHUsername,
           'ccusername': _enteredCCUsername,
           'lcusername': _enteredLCUsername,
           'cfusername': _enteredCFUsername,
@@ -180,6 +182,21 @@ class _AuthScreenState extends State<AuthScreen> {
                             _enteredPassword = value!;
                           },
                         ),
+                        const SizedBox(height: 12),
+                        if (!_isLogin)
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Github Username',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[300]!)),
+                            ),
+                            enableSuggestions: false,
+                            onSaved: (value) {
+                              _enteredGHUsername = value!;
+                            },
+                          ),
                         const SizedBox(height: 12),
                         if (!_isLogin)
                           TextFormField(

@@ -30,12 +30,17 @@ class _ProfileState extends State<Profile> {
   int? cfranking;
   int? ccranking;
   int? lcrankingint;
+  bool noGH = false;
+  bool invalidGHUsername = false;
   bool noCC = false;
   bool noCF = false;
   bool noLC = false;
   bool isCCLoading = false;
   bool isCFLoading = false;
   bool isLCLoading = false;
+  int totalContributions = 0;
+  bool isGHLoading = false;
+  Map<DateTime, int> heatmapData = {};
 
   @override
   void initState() {
@@ -44,6 +49,7 @@ class _ProfileState extends State<Profile> {
     getCCStats();
     getCFStats();
     getLCStats();
+    _getTotalContributions();
   }
 
   Future<dynamic> getUserData() async {
@@ -221,6 +227,65 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  void _getTotalContributions() async {
+    try {
+      setState(() {
+        isGHLoading = true;
+      });
+      userData = await getUserData();
+      if (userData['ghusername'] == null || userData['ghusername'] == '') {
+        setState(() {
+          isGHLoading = false;
+          noGH = true;
+        });
+        return;
+      }
+      DateTime currentDate = DateTime.now();
+      DateTime threeMonthsAgo = currentDate.subtract(const Duration(days: 180));
+      var url = Uri.parse(
+          'https://github-contributions-api.jogruber.de/v4/${userData['ghusername']}?y=2023');
+      NetWorkHelper netWorkHelper = NetWorkHelper(url);
+      var response = await netWorkHelper.getData();
+      if (response == null) {
+        setState(() {
+          isGHLoading = false;
+          invalidGHUsername = true;
+        });
+        return;
+      }
+      var totalCommits = response['total']['2023'];
+      var contributions = response['contributions'];
+      for (var contribution in contributions) {
+        var date = DateTime.parse(contribution['date']);
+        if (date.isAfter(threeMonthsAgo) && date.isBefore(currentDate)) {
+          int count = contribution['count'];
+          heatmapData[date] = count;
+        }
+      }
+      setState(() {
+        totalContributions = totalCommits;
+        isGHLoading = false;
+      });
+
+      await FirebaseFirestore.instance
+          .collection('rankings')
+          .doc(user.uid)
+          .update(
+        {
+          'ghcontributions': totalContributions,
+        },
+      );
+    } on SocketException catch (e) {
+      // Handle network-related errors (e.g., no internet connection)
+      print('Network Error: ${e.message}');
+      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
+    } catch (e) {
+      // Catch any other unexpected errors
+      print('Error: ${e.toString()}');
+      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
+    }
+  }
+
   void toggleTheme() {
     setState(() {
       widget.toggleDarkMode();
@@ -362,10 +427,10 @@ class _ProfileState extends State<Profile> {
               ],
             ),
             const SizedBox(height: 16),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(top: 8, bottom: 8, left: 24),
                   child: Text(
                     'Github Contributions',
@@ -373,8 +438,14 @@ class _ProfileState extends State<Profile> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                 ),
-                SizedBox(height: 16),
-                GithubHeatMap(),
+                const SizedBox(height: 16),
+                GithubHeatMap(
+                  heatmapData: heatmapData,
+                  isGHLoading: isGHLoading,
+                  totalContributions: totalContributions,
+                  noGH: noGH,
+                  invalidGHUsername: invalidGHUsername,
+                ),
               ],
             ),
           ],
