@@ -44,6 +44,7 @@ dependencies:
   percent_indicator: ^4.2.3
   flutter_heatmap_calendar: ^1.0.5
   intl: ^0.18.1
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:

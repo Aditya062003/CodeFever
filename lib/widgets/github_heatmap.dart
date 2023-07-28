@@ -1,4 +1,3 @@
-import 'package:codefever/services/networkhelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:intl/intl.dart';
@@ -84,6 +83,7 @@ class _GithubHeatMapState extends State<GithubHeatMap> {
                             DateTime dateTime = DateTime.parse(date);
                             final formatter = DateFormat('MMMM d, y');
                             String formattedDate = formatter.format(dateTime);
+                            ScaffoldMessenger.of(context).clearSnackBars();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
