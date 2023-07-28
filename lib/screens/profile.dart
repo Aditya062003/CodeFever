@@ -1,3 +1,4 @@
+import 'package:codefever/widgets/github_heatmap.dart';
 import 'package:codefever/widgets/table.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -241,7 +242,6 @@ class _ProfileState extends State<Profile> {
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.refresh),
-            color: Theme.of(context).colorScheme.primary,
           )
         ],
       ),
@@ -362,38 +362,19 @@ class _ProfileState extends State<Profile> {
               ],
             ),
             const SizedBox(height: 16),
-            Column(
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 8, bottom: 8, left: 24),
                   child: Text(
-                    'Status of Total Submissions',
+                    'Github Contributions',
                     textAlign: TextAlign.left,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                 ),
-                const SizedBox(height: 16),
-                Container(
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: 16), // Add margin to the table
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TableWidget(
-                    isCCLoading: isCCLoading,
-                    ccranking: ccranking,
-                    ccstars: ccstars,
-                    isCFLoading: isCFLoading,
-                    cfranking: cfranking,
-                    isLCLoading: isLCLoading,
-                    lcrankingint: lcrankingint,
-                    noCC: noCC,
-                    noCF: noCF,
-                    noLC: noLC,
-                  ),
-                ),
+                SizedBox(height: 16),
+                GithubHeatMap(),
               ],
             ),
           ],

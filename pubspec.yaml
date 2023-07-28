@@ -42,6 +42,8 @@ dependencies:
   firebase_storage: ^11.2.5
   http: ^1.1.0
   percent_indicator: ^4.2.3
+  flutter_heatmap_calendar: ^1.0.5
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:
