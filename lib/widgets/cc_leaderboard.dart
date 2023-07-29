@@ -1,23 +1,44 @@
-import 'package:codefever/models/cc_leaderboardentry.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:codefever/models/cc_leaderboardentry.dart';
 
 class CCLeaderboard extends StatelessWidget {
   const CCLeaderboard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Future<String> getUserImage(String uid) async {
+      final userData =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      return userData['image_url'];
+    }
+
     return Scaffold(
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        // crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'CodeChef Leaderboard',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+          const Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: NetworkImage(
+                        'https://pbs.twimg.com/profile_images/1477930785537605633/ROTVNVz7_400x400.jpg'),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'CodeChef Rankings',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Arial',
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -32,9 +53,11 @@ class CCLeaderboard extends StatelessWidget {
                   );
                 }
 
-                // Process the snapshot data and create a list of leaderboard entries
-                List<CCLeaderboardEntry> leaderboard =
-                    snapshot.data!.docs.map((doc) {
+                List<CCLeaderboardEntry> leaderboard = snapshot.data!.docs
+                    .where((doc) =>
+                        doc['ccranking'] !=
+                        0) // Filter out docs without 'ccranking' field
+                    .map((doc) {
                   return CCLeaderboardEntry(
                     userId: doc.id,
                     rank: doc['ccranking'],
@@ -42,84 +65,237 @@ class CCLeaderboard extends StatelessWidget {
                   );
                 }).toList();
 
-                // Sort the leaderboard entries based on the rank
-                leaderboard.sort((a, b) => a.rank.compareTo(b.rank));
+                leaderboard.sort((a, b) => b.rank.compareTo(a.rank));
+                final uid1 = leaderboard[0].userId;
+                final uid2 = leaderboard[1].userId;
+                final uid3 = leaderboard[2].userId;
 
-                // Create the leaderboard UI using the sorted leaderboard list
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Table(
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    
-                    columnWidths: {
-                      0: FlexColumnWidth(3), // Rank column
-                      1: FlexColumnWidth(1), // Username column
-                      2: FlexColumnWidth(1), // Stars column
-                    },
-                    border: TableBorder.all(color: Colors.grey),
-                    children: [
-                      // Table header
-                      TableRow(
+                return Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          TableCell(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text('Username'),
-                            ),
+                          FutureBuilder<String>(
+                            future: getUserImage(uid2),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              }
+                              if (snapshot.hasError) {
+                                return const Icon(Icons.error);
+                              }
+                              final img = snapshot.data;
+                              return CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.blueGrey,
+                                child: CircleAvatar(
+                                  radius: 45,
+                                  backgroundImage: NetworkImage(img!),
+                                ),
+                              );
+                            },
                           ),
-                          TableCell(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text('Rank'),
-                            ),
+                          FutureBuilder<String>(
+                            future: getUserImage(uid1),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              }
+                              if (snapshot.hasError) {
+                                return const Icon(Icons.error);
+                              }
+                              final img = snapshot.data;
+                              return CircleAvatar(
+                                radius: 65,
+                                backgroundColor: Color(0xffFDCF09),
+                                child: CircleAvatar(
+                                  radius: 60,
+                                  backgroundImage: NetworkImage(img!),
+                                ),
+                              );
+                            },
                           ),
-                          TableCell(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text('Stars'),
-                            ),
+                          FutureBuilder<String>(
+                            future: getUserImage(uid3),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              }
+                              if (snapshot.hasError) {
+                                return const Icon(Icons.error);
+                              }
+                              final img = snapshot.data;
+                              return CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.brown[300],
+                                child: CircleAvatar(
+                                  radius: 45,
+                                  backgroundImage: NetworkImage(img!),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
-                      // Leaderboard entries
-                      for (final entry in leaderboard)
-                        TableRow(
+                    ),
+                    SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Table(
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.middle,
+                          columnWidths: const {
+                            0: FlexColumnWidth(1),
+                            1: FlexColumnWidth(3),
+                            2: FlexColumnWidth(2),
+                            3: FlexColumnWidth(2),
+                          },
+                          border: TableBorder.symmetric(
+                            outside: const BorderSide(
+                              color: Colors.grey,
+                              width: 1,
+                            ),
+                          ),
                           children: [
-                            TableCell(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: StreamBuilder<DocumentSnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(entry.userId)
-                                      .snapshots(),
-                                  builder: (context, userSnapshot) {
-                                    if (!userSnapshot.hasData) {
-                                      return Text('Loading...');
-                                    }
-                                    final userData = userSnapshot.data!;
-                                    final username = userData['username'];
-                                    return Text(username);
-                                  },
+                            // Table header
+                            const TableRow(
+                              children: [
+                                TableCell(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'S.No.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                TableCell(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Username',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Rank',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Stars',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            TableCell(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text('${entry.rank}'),
+                            // Leaderboard entries
+                            for (int i = 0; i < leaderboard.length; i++)
+                              TableRow(
+                                children: [
+                                  TableCell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        '${i + 1}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: StreamBuilder<DocumentSnapshot>(
+                                        stream: FirebaseFirestore.instance
+                                            .collection('users')
+                                            .doc(leaderboard[i].userId)
+                                            .snapshots(),
+                                        builder: (context, userSnapshot) {
+                                          if (!userSnapshot.hasData) {
+                                            return const Text('Loading...');
+                                          }
+                                          final userData = userSnapshot.data!;
+                                          final username = userData['username'];
+                                          return Text(
+                                            username,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        '${leaderboard[i].rank}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        '${leaderboard[i].stars}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            TableCell(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text('${entry.stars}'),
-                              ),
-                            ),
                           ],
                         ),
-                    ],
-                  ),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),

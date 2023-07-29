@@ -18,7 +18,23 @@ class _RankingsScreenState extends State<RankingsScreen> {
       appBar: AppBar(
         title: const Text('Rankings'),
       ),
-      body: CCLeaderboard(),
+      body: CarouselSlider(
+          items: [CCLeaderboard(), CCLeaderboard(), CCLeaderboard()].map((i) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    decoration: BoxDecoration(color: Colors.amber),
+                    child: i);
+              },
+            );
+          }).toList(),
+          options: CarouselOptions(
+            height: double.infinity,
+            aspectRatio: 1 / 1,
+            scrollDirection: Axis.horizontal,
+          )),
     );
   }
 }

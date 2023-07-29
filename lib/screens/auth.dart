@@ -72,6 +72,17 @@ class _AuthScreenState extends State<AuthScreen> {
           'email': _enteredEmail,
           'image_url': imageURL,
         });
+
+        await FirebaseFirestore.instance
+            .collection('rankings')
+            .doc(userCredentials.user!.uid)
+            .set({
+          'ccranking': 0,
+          'ccstars': '',
+          'lcranking': 0,
+          'cfranking': 0,
+          'ghcontributions': 0
+        });
       }
     } on FirebaseAuthException catch (error) {
       ScaffoldMessenger.of(context).clearSnackBars();

@@ -41,7 +41,6 @@ class _ProfileState extends State<Profile>
   bool isLCLoading = false;
   int totalContributions = 0;
   bool isGHLoading = false;
-  bool reload = false;
   Map<DateTime, int> heatmapData = {};
 
   @override
@@ -62,38 +61,6 @@ class _ProfileState extends State<Profile>
         .collection('users')
         .doc(user.uid)
         .get();
-  }
-
-  Future<void> fetchAndUpdateData() async {
-    // Set loading states to true
-    setState(() {
-      isCCLoading = true;
-      isCFLoading = true;
-      isLCLoading = true;
-      isGHLoading = true;
-      reload = true;
-    });
-
-    // Fetch CodeChef stats and update Firestore
-    await getCCStats();
-
-    // Fetch Codeforces stats and update Firestore
-    await getCFStats();
-
-    // Fetch LeetCode stats and update Firestore
-    await getLCStats();
-
-    // Fetch GitHub stats and update Firestore
-    await getTotalContributions();
-
-    // Set loading states to false
-    setState(() {
-      isCCLoading = false;
-      isCFLoading = false;
-      isLCLoading = false;
-      isGHLoading = false;
-      reload = false;
-    });
   }
 
   void getUserName() async {
@@ -124,81 +91,37 @@ class _ProfileState extends State<Profile>
           .collection('rankings')
           .doc(user.uid)
           .get();
-      if (reload) {
-        var url = Uri.parse(
-            'https://codechef-api.vercel.app/${userData['ccusername']}');
-        NetWorkHelper netWorkHelper = NetWorkHelper(url);
-        var ccData = await netWorkHelper.getData();
-        if (ccData['success'] == false) {
-          print('CC Error:  Invalid UserName');
-          setState(() {
-            isCCLoading = false;
-          });
-          return;
-        }
-
-        setState(
-          () {
-            isCCLoading = false;
-            ccranking = ccData['currentRating'];
-            ccstars = ccData['stars'];
-          },
-        );
-        await FirebaseFirestore.instance
-            .collection('rankings')
-            .doc(user.uid)
-            .update(
-          {
-            'ccranking': ccranking,
-            'ccstars': ccstars,
-          },
-        );
-      } else {
-        if (snapshot.exists) {
-          setState(() {
-            isCCLoading = false;
-            ccranking = snapshot['ccranking'];
-            ccstars = snapshot['ccstars'];
-          });
-        } else {
-          var url = Uri.parse(
-              'https://codechef-api.vercel.app/${userData['ccusername']}');
-          NetWorkHelper netWorkHelper = NetWorkHelper(url);
-          var ccData = await netWorkHelper.getData();
-          if (ccData['success'] == false) {
-            print('CC Error:  Invalid UserName');
-            setState(() {
-              isCCLoading = false;
-            });
-            return;
-          }
-
-          setState(
-            () {
-              isCCLoading = false;
-              ccranking = ccData['currentRating'];
-              ccstars = ccData['stars'];
-            },
-          );
-          await FirebaseFirestore.instance
-              .collection('rankings')
-              .doc(user.uid)
-              .update(
-            {
-              'ccranking': ccranking,
-              'ccstars': ccstars,
-            },
-          );
-        }
+      // if (snapshot.exists) {
+      var url = Uri.parse(
+          'https://codechef-api.vercel.app/${userData['ccusername']}');
+      NetWorkHelper netWorkHelper = NetWorkHelper(url);
+      var ccData = await netWorkHelper.getData();
+      if (ccData['success'] == false) {
+        print('CC Error:  Invalid UserName');
+        setState(() {
+          isCCLoading = false;
+        });
+        return;
       }
+      await FirebaseFirestore.instance
+          .collection('rankings')
+          .doc(user.uid)
+          .update(
+        {
+          'ccranking': ccData['currentRating'],
+          'ccstars': ccData['stars'],
+        },
+      );
+      setState(() {
+        isCCLoading = false;
+        ccranking = ccData['currentRating'];
+        ccstars = ccData['stars'];
+      });
+      // }
     } on SocketException catch (e) {
-      // Handle network-related errors (e.g., no internet connection)
       print('Network Error: ${e.message}');
-      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
     } catch (e) {
-      // Catch any other unexpected errors
       print('Error: ${e.toString()}');
-      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
     }
   }
 
@@ -219,78 +142,37 @@ class _ProfileState extends State<Profile>
           .collection('rankings')
           .doc(user.uid)
           .get();
-      if (reload) {
-        var url = Uri.parse(
-            'https://codeforces.com/api/user.info?handles=${userData['cfusername']}');
-        NetWorkHelper netWorkHelper = NetWorkHelper(url);
-        var cfData = await netWorkHelper.getData();
 
-        if (cfData['status'] != 'OK') {
-          print('CF Error: ${cfData['comment']}');
-          setState(() {
-            isCFLoading = false;
-          });
-          return;
-        }
+      // if (snapshot.exists) {
+      var url = Uri.parse(
+          'https://codeforces.com/api/user.info?handles=${userData['cfusername']}');
+      NetWorkHelper netWorkHelper = NetWorkHelper(url);
+      var cfData = await netWorkHelper.getData();
 
-        setState(
-          () {
-            isCFLoading = false;
-            cfranking = cfData['result'][0]['rating'];
-          },
-        );
-        await FirebaseFirestore.instance
-            .collection('rankings')
-            .doc(user.uid)
-            .update(
-          {
-            'cfranking': cfranking,
-          },
-        );
-      } else {
-        if (snapshot.exists) {
-          setState(() {
-            isCFLoading = false;
-            cfranking = snapshot['cfranking'];
-          });
-        } else {
-          var url = Uri.parse(
-              'https://codeforces.com/api/user.info?handles=${userData['cfusername']}');
-          NetWorkHelper netWorkHelper = NetWorkHelper(url);
-          var cfData = await netWorkHelper.getData();
-
-          if (cfData['status'] != 'OK') {
-            print('CF Error: ${cfData['comment']}');
-            setState(() {
-              isCFLoading = false;
-            });
-            return;
-          }
-
-          setState(
-            () {
-              isCFLoading = false;
-              cfranking = cfData['result'][0]['rating'];
-            },
-          );
-          await FirebaseFirestore.instance
-              .collection('rankings')
-              .doc(user.uid)
-              .update(
-            {
-              'cfranking': cfranking,
-            },
-          );
-        }
+      if (cfData['status'] != 'OK') {
+        print('CF Error: ${cfData['comment']}');
+        setState(() {
+          isCFLoading = false;
+        });
+        return;
       }
+      await FirebaseFirestore.instance
+          .collection('rankings')
+          .doc(user.uid)
+          .update(
+        {
+          'cfranking': cfData['result'][0]['rating'],
+        },
+      );
+      setState(() {
+        isCFLoading = false;
+        cfranking = cfData['result'][0]['rating'];
+      });
+      // }
     } on SocketException catch (e) {
-      // Handle network-related errors (e.g., no internet connection)
       print('Network Error: ${e.message}');
-      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
     } catch (e) {
-      // Catch any other unexpected errors
       print('Error: ${e.toString()}');
-      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
     }
   }
 
@@ -311,84 +193,42 @@ class _ProfileState extends State<Profile>
           .collection('rankings')
           .doc(user.uid)
           .get();
-      if (reload) {
-        var url = Uri.parse(
-            'https://leetcode.com/graphql?query=query{userContestRanking(username:%22${userData['lcusername']}%22){attendedContestsCount%20rating%20globalRanking%20totalParticipants%20topPercentage}%20userContestRankingHistory(username:%22rutor%22){attended%20trendDirection%20problemsSolved%20totalProblems%20finishTimeInSeconds%20rating%20ranking%20contest{title%20startTime}}}');
-        NetWorkHelper netWorkHelper = NetWorkHelper(url);
-        var lcData = await netWorkHelper.getData();
+      // if (snapshot.exists) {
+      var url = Uri.parse(
+          'https://leetcode.com/graphql?query=query{userContestRanking(username:%22${userData['lcusername']}%22){attendedContestsCount%20rating%20globalRanking%20totalParticipants%20topPercentage}%20userContestRankingHistory(username:%22rutor%22){attended%20trendDirection%20problemsSolved%20totalProblems%20finishTimeInSeconds%20rating%20ranking%20contest{title%20startTime}}}');
+      NetWorkHelper netWorkHelper = NetWorkHelper(url);
+      var lcData = await netWorkHelper.getData();
 
-        if (lcData.containsKey('errors')) {
-          setState(() {
-            isLCLoading = false;
-          });
-          // Handle GraphQL errors
-          String errorMessage = lcData['errors'][0]['message'];
-          print('GraphQL Error: $errorMessage');
-          // Perform appropriate error handling, such as showing an error message to the user or logging the error.
-          return;
-        }
-
-        double lcranking = lcData['data']['userContestRanking']['rating'];
+      if (lcData.containsKey('errors')) {
         setState(() {
           isLCLoading = false;
-          lcrankingint = lcranking.toInt();
         });
+        // Handle GraphQL errors
+        String errorMessage = lcData['errors'][0]['message'];
+        print('GraphQL Error: $errorMessage');
 
-        await FirebaseFirestore.instance
-            .collection('rankings')
-            .doc(user.uid)
-            .update(
-          {
-            'lcranking': lcrankingint,
-          },
-        );
-      } else {
-        if (snapshot.exists) {
-          setState(() {
-            isLCLoading = false;
-            lcrankingint = snapshot['lcranking'];
-          });
-        } else {
-          var url = Uri.parse(
-              'https://leetcode.com/graphql?query=query{userContestRanking(username:%22${userData['lcusername']}%22){attendedContestsCount%20rating%20globalRanking%20totalParticipants%20topPercentage}%20userContestRankingHistory(username:%22rutor%22){attended%20trendDirection%20problemsSolved%20totalProblems%20finishTimeInSeconds%20rating%20ranking%20contest{title%20startTime}}}');
-          NetWorkHelper netWorkHelper = NetWorkHelper(url);
-          var lcData = await netWorkHelper.getData();
-
-          if (lcData.containsKey('errors')) {
-            setState(() {
-              isLCLoading = false;
-            });
-            // Handle GraphQL errors
-            String errorMessage = lcData['errors'][0]['message'];
-            print('GraphQL Error: $errorMessage');
-            // Perform appropriate error handling, such as showing an error message to the user or logging the error.
-            return;
-          }
-
-          double lcranking = lcData['data']['userContestRanking']['rating'];
-          setState(() {
-            isLCLoading = false;
-            lcrankingint = lcranking.toInt();
-          });
-
-          await FirebaseFirestore.instance
-              .collection('rankings')
-              .doc(user.uid)
-              .update(
-            {
-              'lcranking': lcrankingint,
-            },
-          );
-        }
+        return;
       }
+
+      double lcranking = lcData['data']['userContestRanking']['rating'];
+      lcrankingint = lcranking.toInt();
+      await FirebaseFirestore.instance
+          .collection('rankings')
+          .doc(user.uid)
+          .update(
+        {
+          'lcranking': lcrankingint,
+        },
+      );
+      setState(() {
+        isLCLoading = false;
+        lcrankingint = lcrankingint;
+      });
+      // }
     } on SocketException catch (e) {
-      // Handle network-related errors (e.g., no internet connection)
       print('Network Error: ${e.message}');
-      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
     } catch (e) {
-      // Catch any other unexpected errors
       print('Error: ${e.toString()}');
-      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
     }
   }
 
@@ -405,99 +245,49 @@ class _ProfileState extends State<Profile>
         });
         return;
       }
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('rankings')
-          .doc(user.uid)
-          .get();
-      if (reload) {
-        DateTime currentDate = DateTime.now();
-        DateTime threeMonthsAgo =
-            currentDate.subtract(const Duration(days: 180));
-        var url = Uri.parse(
-            'https://github-contributions-api.jogruber.de/v4/${userData['ghusername']}?y=2023');
-        NetWorkHelper netWorkHelper = NetWorkHelper(url);
-        var response = await netWorkHelper.getData();
-        if (response == null) {
-          setState(() {
-            isGHLoading = false;
-            invalidGHUsername = true;
-          });
-          return;
-        }
-        var totalCommits = response['total']['2023'];
-        var contributions = response['contributions'];
-        for (var contribution in contributions) {
-          var date = DateTime.parse(contribution['date']);
-          if (date.isAfter(threeMonthsAgo) && date.isBefore(currentDate)) {
-            int count = contribution['count'];
-            heatmapData[date] = count;
-          }
-        }
-        setState(() {
-          totalContributions = totalCommits;
-          isGHLoading = false;
-        });
+      // DocumentSnapshot snapshot = await FirebaseFirestore.instance
+      //     .collection('rankings')
+      //     .doc(user.uid)
+      //     .get();
 
-        await FirebaseFirestore.instance
-            .collection('rankings')
-            .doc(user.uid)
-            .update(
-          {
-            'ghcontributions': totalContributions,
-          },
-        );
-      } else {
-        DateTime currentDate = DateTime.now();
-        DateTime threeMonthsAgo =
-            currentDate.subtract(const Duration(days: 180));
-        var url = Uri.parse(
-            'https://github-contributions-api.jogruber.de/v4/${userData['ghusername']}?y=2023');
-        NetWorkHelper netWorkHelper = NetWorkHelper(url);
-        var response = await netWorkHelper.getData();
-        if (response == null) {
-          setState(() {
-            isGHLoading = false;
-            invalidGHUsername = true;
-          });
-          return;
-        }
-        var totalCommits = response['total']['2023'];
-        var contributions = response['contributions'];
-        for (var contribution in contributions) {
-          var date = DateTime.parse(contribution['date']);
-          if (date.isAfter(threeMonthsAgo) && date.isBefore(currentDate)) {
-            int count = contribution['count'];
-            heatmapData[date] = count;
-          }
-        }
+      DateTime currentDate = DateTime.now();
+      DateTime threeMonthsAgo = currentDate.subtract(const Duration(days: 180));
+      var url = Uri.parse(
+          'https://github-contributions-api.jogruber.de/v4/${userData['ghusername']}?y=2023');
+      NetWorkHelper netWorkHelper = NetWorkHelper(url);
+      var response = await netWorkHelper.getData();
+      if (response == null) {
         setState(() {
-          totalContributions = totalCommits;
           isGHLoading = false;
+          invalidGHUsername = true;
         });
-        if (snapshot.exists) {
-          setState(() {
-            isGHLoading = false;
-            totalContributions = snapshot['ghcontributions'];
-          });
-        } else {
-          await FirebaseFirestore.instance
-              .collection('rankings')
-              .doc(user.uid)
-              .update(
-            {
-              'ghcontributions': totalContributions,
-            },
-          );
+        return;
+      }
+      var totalCommits = response['total']['2023'];
+      var contributions = response['contributions'];
+      for (var contribution in contributions) {
+        var date = DateTime.parse(contribution['date']);
+        if (date.isAfter(threeMonthsAgo) && date.isBefore(currentDate)) {
+          int count = contribution['count'];
+          heatmapData[date] = count;
         }
       }
+      setState(() {
+        totalContributions = totalCommits;
+        isGHLoading = false;
+      });
+      await FirebaseFirestore.instance
+          .collection('rankings')
+          .doc(user.uid)
+          .update(
+        {
+          'ghcontributions': totalContributions,
+        },
+      );
     } on SocketException catch (e) {
-      // Handle network-related errors (e.g., no internet connection)
       print('Network Error: ${e.message}');
-      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
     } catch (e) {
-      // Catch any other unexpected errors
       print('Error: ${e.toString()}');
-      // Perform appropriate error handling, such as showing an error message to the user or logging the error.
     }
   }
 
@@ -520,10 +310,6 @@ class _ProfileState extends State<Profile>
                 : Icons.nightlight_round),
             onPressed: toggleTheme,
           ),
-          IconButton(
-            onPressed: fetchAndUpdateData,
-            icon: const Icon(Icons.refresh),
-          )
         ],
       ),
       body: Center(
