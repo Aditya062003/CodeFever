@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:codefever/screens/profile.dart';
 import 'package:codefever/screens/tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
