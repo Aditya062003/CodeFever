@@ -31,6 +31,8 @@ class _ProfileState extends State<Profile>
   int? cfranking;
   int? ccranking;
   int? lcrankingint;
+  int? lcglobalranking;
+  String? cfrank;
   bool noGH = false;
   bool invalidGHUsername = false;
   bool noCC = false;
@@ -87,11 +89,6 @@ class _ProfileState extends State<Profile>
         });
         return;
       }
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('rankings')
-          .doc(user.uid)
-          .get();
-      // if (snapshot.exists) {
       var url = Uri.parse(
           'https://codechef-api.vercel.app/${userData['ccusername']}');
       NetWorkHelper netWorkHelper = NetWorkHelper(url);
@@ -117,7 +114,7 @@ class _ProfileState extends State<Profile>
         ccranking = ccData['currentRating'];
         ccstars = ccData['stars'];
       });
-      // }
+    
     } on SocketException catch (e) {
       print('Network Error: ${e.message}');
     } catch (e) {
@@ -138,12 +135,6 @@ class _ProfileState extends State<Profile>
         });
         return;
       }
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('rankings')
-          .doc(user.uid)
-          .get();
-
-      // if (snapshot.exists) {
       var url = Uri.parse(
           'https://codeforces.com/api/user.info?handles=${userData['cfusername']}');
       NetWorkHelper netWorkHelper = NetWorkHelper(url);
@@ -162,13 +153,15 @@ class _ProfileState extends State<Profile>
           .update(
         {
           'cfranking': cfData['result'][0]['rating'],
+          'cfrank':cfData['result'][0]['rank']
         },
       );
       setState(() {
         isCFLoading = false;
         cfranking = cfData['result'][0]['rating'];
+        cfrank = cfData['result'][0]['rank'];
       });
-      // }
+      
     } on SocketException catch (e) {
       print('Network Error: ${e.message}');
     } catch (e) {
@@ -189,11 +182,7 @@ class _ProfileState extends State<Profile>
         });
         return;
       }
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('rankings')
-          .doc(user.uid)
-          .get();
-      // if (snapshot.exists) {
+
       var url = Uri.parse(
           'https://leetcode.com/graphql?query=query{userContestRanking(username:%22${userData['lcusername']}%22){attendedContestsCount%20rating%20globalRanking%20totalParticipants%20topPercentage}%20userContestRankingHistory(username:%22rutor%22){attended%20trendDirection%20problemsSolved%20totalProblems%20finishTimeInSeconds%20rating%20ranking%20contest{title%20startTime}}}');
       NetWorkHelper netWorkHelper = NetWorkHelper(url);
@@ -203,7 +192,7 @@ class _ProfileState extends State<Profile>
         setState(() {
           isLCLoading = false;
         });
-        // Handle GraphQL errors
+    
         String errorMessage = lcData['errors'][0]['message'];
         print('GraphQL Error: $errorMessage');
 
@@ -212,19 +201,20 @@ class _ProfileState extends State<Profile>
 
       double lcranking = lcData['data']['userContestRanking']['rating'];
       lcrankingint = lcranking.toInt();
+      lcglobalranking = lcData['data']['userContestRanking']['globalRanking'];
       await FirebaseFirestore.instance
           .collection('rankings')
           .doc(user.uid)
           .update(
         {
           'lcranking': lcrankingint,
+          'lcglobalranking': lcglobalranking,
         },
       );
       setState(() {
         isLCLoading = false;
         lcrankingint = lcrankingint;
       });
-      // }
     } on SocketException catch (e) {
       print('Network Error: ${e.message}');
     } catch (e) {

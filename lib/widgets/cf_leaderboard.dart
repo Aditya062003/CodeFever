@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:codefever/models/cc_leaderboardentry.dart';
+import 'package:codefever/models/cf_leaderboardentry.dart';
 
-class CCLeaderboard extends StatelessWidget {
-  const CCLeaderboard({Key? key}) : super(key: key);
+class CFLeaderboard extends StatelessWidget {
+  const CFLeaderboard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,6 +11,30 @@ class CCLeaderboard extends StatelessWidget {
       final userData =
           await FirebaseFirestore.instance.collection('users').doc(uid).get();
       return userData['image_url'];
+    }
+
+    Color _getTextColor(String rank) {
+      rank = rank.toLowerCase();
+      if (rank.contains('legendary grandmaster') ||
+          rank.contains('international grandmaster') ||
+          rank.contains('grandmaster')) {
+        return Colors.red;
+      } else if (rank.contains('international master') ||
+          rank.contains('master')) {
+        return Colors.orange;
+      } else if (rank.contains('candidate master')) {
+        return Colors.purple;
+      } else if (rank.contains('expert')) {
+        return Colors.blue;
+      } else if (rank.contains('specialist')) {
+        return Colors.green;
+      } else if (rank.contains('pupil')) {
+        return Colors.green[700]!;
+      } else if (rank.contains('newbie')) {
+        return Colors.grey;
+      }
+      // Default color (black) if the rank doesn't match any condition
+      return Colors.black;
     }
 
     return Scaffold(
@@ -23,13 +47,13 @@ class CCLeaderboard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircleAvatar(
-                    radius: 30,
+                    radius: 35,
                     backgroundImage: NetworkImage(
-                        'https://pbs.twimg.com/profile_images/1477930785537605633/ROTVNVz7_400x400.jpg'),
+                        'https://store-images.s-microsoft.com/image/apps.48094.14504742535903781.aedbca21-113a-48f4-b001-4204e73b22fc.503f883f-8339-4dc5-8609-81713a59281f'),
                   ),
                   SizedBox(width: 8),
                   Text(
-                    'CodeChef Rankings',
+                    'CodeForces Rankings',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 28,
@@ -52,15 +76,15 @@ class CCLeaderboard extends StatelessWidget {
                   );
                 }
 
-                List<CCLeaderboardEntry> leaderboard = snapshot.data!.docs
+                List<CFLeaderboardEntry> leaderboard = snapshot.data!.docs
                     .where((doc) =>
-                        doc['ccranking'] !=
+                        doc['cfranking'] !=
                         0) // Filter out docs without 'ccranking' field
                     .map((doc) {
-                  return CCLeaderboardEntry(
+                  return CFLeaderboardEntry(
                     userId: doc.id,
-                    rank: doc['ccranking'],
-                    stars: doc['ccstars'],
+                    rating: doc['cfranking'],
+                    rank: doc['cfrank'],
                   );
                 }).toList();
 
@@ -149,7 +173,7 @@ class CCLeaderboard extends StatelessWidget {
                                     );
                                   },
                                 )
-                              : const SizedBox(),
+                              : const SizedBox()
                         ],
                       ),
                     ),
@@ -163,7 +187,7 @@ class CCLeaderboard extends StatelessWidget {
                             0: FlexColumnWidth(1),
                             1: FlexColumnWidth(3),
                             2: FlexColumnWidth(2),
-                            3: FlexColumnWidth(2),
+                            3: FlexColumnWidth(3),
                           },
                           border: TableBorder.symmetric(
                             outside: const BorderSide(
@@ -205,7 +229,7 @@ class CCLeaderboard extends StatelessWidget {
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text(
-                                      'Rank',
+                                      'Rating',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 18,
@@ -218,7 +242,7 @@ class CCLeaderboard extends StatelessWidget {
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text(
-                                      'Stars',
+                                      'Rank',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 18,
@@ -276,7 +300,7 @@ class CCLeaderboard extends StatelessWidget {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        '${leaderboard[i].rank}',
+                                        '${leaderboard[i].rating}',
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           fontSize: 16,
@@ -289,11 +313,13 @@ class CCLeaderboard extends StatelessWidget {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        '${leaderboard[i].stars}',
+                                        '${leaderboard[i].rank}',
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
+                                          color: _getTextColor(
+                                              leaderboard[i].rank),
                                         ),
                                       ),
                                     ),

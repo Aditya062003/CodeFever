@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:codefever/models/cc_leaderboardentry.dart';
+import 'package:codefever/models/lc_leaderboardentry.dart';
 
 class CCLeaderboard extends StatelessWidget {
   const CCLeaderboard({Key? key}) : super(key: key);
@@ -25,11 +25,11 @@ class CCLeaderboard extends StatelessWidget {
                   CircleAvatar(
                     radius: 30,
                     backgroundImage: NetworkImage(
-                        'https://pbs.twimg.com/profile_images/1477930785537605633/ROTVNVz7_400x400.jpg'),
+                        'https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png'),
                   ),
                   SizedBox(width: 8),
                   Text(
-                    'CodeChef Rankings',
+                    'LeetCode Rankings',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 28,
@@ -52,15 +52,15 @@ class CCLeaderboard extends StatelessWidget {
                   );
                 }
 
-                List<CCLeaderboardEntry> leaderboard = snapshot.data!.docs
+                List<LCLeaderboardEntry> leaderboard = snapshot.data!.docs
                     .where((doc) =>
-                        doc['ccranking'] !=
+                        doc['lcranking'] !=
                         0) // Filter out docs without 'ccranking' field
                     .map((doc) {
-                  return CCLeaderboardEntry(
+                  return LCLeaderboardEntry(
                     userId: doc.id,
-                    rank: doc['ccranking'],
-                    stars: doc['ccstars'],
+                    rating: doc['lcranking'],
+                    rank: doc['globalrank'],
                   );
                 }).toList();
 
@@ -205,7 +205,7 @@ class CCLeaderboard extends StatelessWidget {
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text(
-                                      'Rank',
+                                      'Rating',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 18,
@@ -218,7 +218,7 @@ class CCLeaderboard extends StatelessWidget {
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text(
-                                      'Stars',
+                                      'Global Rank',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 18,
@@ -276,7 +276,7 @@ class CCLeaderboard extends StatelessWidget {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        '${leaderboard[i].rank}',
+                                        '${leaderboard[i].rating}',
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           fontSize: 16,
@@ -289,7 +289,7 @@ class CCLeaderboard extends StatelessWidget {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        '${leaderboard[i].stars}',
+                                        '${leaderboard[i].rank}',
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           fontSize: 16,

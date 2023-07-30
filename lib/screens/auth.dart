@@ -81,7 +81,9 @@ class _AuthScreenState extends State<AuthScreen> {
           'ccstars': '',
           'lcranking': 0,
           'cfranking': 0,
-          'ghcontributions': 0
+          'cfrank':'',
+          'ghcontributions': 0,
+          'lcglobalranking': 0,
         });
       }
     } on FirebaseAuthException catch (error) {
