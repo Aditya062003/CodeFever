@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:codefever/models/cf_leaderboardentry.dart';
+import 'package:codefever/models/gh_leaderboardentry.dart';
 
-class CFLeaderboard extends StatelessWidget {
-  const CFLeaderboard({super.key});
+class GHLeaderboard extends StatelessWidget {
+  const GHLeaderboard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -11,30 +11,6 @@ class CFLeaderboard extends StatelessWidget {
       final userData =
           await FirebaseFirestore.instance.collection('users').doc(uid).get();
       return userData['image_url'];
-    }
-
-    Color getTextColor(String rank) {
-      rank = rank.toLowerCase();
-      if (rank.contains('legendary grandmaster') ||
-          rank.contains('international grandmaster') ||
-          rank.contains('grandmaster')) {
-        return Colors.red;
-      } else if (rank.contains('international master') ||
-          rank.contains('master')) {
-        return Colors.orange;
-      } else if (rank.contains('candidate master')) {
-        return Colors.purple;
-      } else if (rank.contains('expert')) {
-        return Colors.blue;
-      } else if (rank.contains('specialist')) {
-        return Colors.green;
-      } else if (rank.contains('pupil')) {
-        return Colors.green[700]!;
-      } else if (rank.contains('newbie')) {
-        return Colors.grey;
-      }
-      // Default color (black) if the rank doesn't match any condition
-      return Colors.black;
     }
 
     return Scaffold(
@@ -46,13 +22,13 @@ class CFLeaderboard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  radius: 35,
+                  radius: 30,
                   backgroundImage: NetworkImage(
-                      'https://store-images.s-microsoft.com/image/apps.48094.14504742535903781.aedbca21-113a-48f4-b001-4204e73b22fc.503f883f-8339-4dc5-8609-81713a59281f'),
+                      'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'),
                 ),
                 SizedBox(width: 8),
                 Text(
-                  'CodeForces Rankings',
+                  'Github Rankings',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,
@@ -73,19 +49,18 @@ class CFLeaderboard extends StatelessWidget {
                 );
               }
 
-              List<CFLeaderboardEntry> leaderboard = snapshot.data!.docs
-                  .where((doc) =>
-                      doc['cfranking'] !=
-                      0) // Filter out docs without 'ccranking' field
+              List<GHLeaderboardEntry> leaderboard = snapshot.data!.docs
+                  .where((doc) => doc['ghcontributions'] != 0)
                   .map((doc) {
-                return CFLeaderboardEntry(
+                return GHLeaderboardEntry(
                   userId: doc.id,
-                  rating: doc['cfranking'],
-                  rank: doc['cfrank'],
+                  contributions: doc['ghcontributions'],
+                  repos: doc['repos'],
                 );
               }).toList();
 
-              leaderboard.sort((a, b) => b.rank.compareTo(a.rank));
+              leaderboard
+                  .sort((a, b) => b.contributions.compareTo(a.contributions));
               final uid1 = leaderboard[0].userId;
               var uid2 = '';
               var uid3 = '';
@@ -140,7 +115,7 @@ class CFLeaderboard extends StatelessWidget {
                             final img = snapshot.data;
                             return CircleAvatar(
                               radius: 65,
-                              backgroundColor: const Color(0xffFDCF09),
+                              backgroundColor: Color(0xffFDCF09),
                               child: CircleAvatar(
                                 radius: 60,
                                 backgroundImage: NetworkImage(img!),
@@ -170,7 +145,7 @@ class CFLeaderboard extends StatelessWidget {
                                   );
                                 },
                               )
-                            : const SizedBox()
+                            : const SizedBox(),
                       ],
                     ),
                   ),
@@ -184,7 +159,7 @@ class CFLeaderboard extends StatelessWidget {
                           0: FlexColumnWidth(1),
                           1: FlexColumnWidth(3),
                           2: FlexColumnWidth(2),
-                          3: FlexColumnWidth(3),
+                          3: FlexColumnWidth(2),
                         },
                         border: TableBorder.symmetric(
                           outside: const BorderSide(
@@ -193,7 +168,6 @@ class CFLeaderboard extends StatelessWidget {
                           ),
                         ),
                         children: [
-                          // Table header
                           const TableRow(
                             children: [
                               TableCell(
@@ -203,7 +177,7 @@ class CFLeaderboard extends StatelessWidget {
                                     'S.No.',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontSize: 10,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -226,7 +200,7 @@ class CFLeaderboard extends StatelessWidget {
                                 child: Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
-                                    'Rating',
+                                    'Commits',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 18,
@@ -239,7 +213,7 @@ class CFLeaderboard extends StatelessWidget {
                                 child: Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
-                                    'Rank',
+                                    'Repos',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 18,
@@ -250,7 +224,6 @@ class CFLeaderboard extends StatelessWidget {
                               ),
                             ],
                           ),
-                          // Leaderboard entries
                           for (int i = 0; i < leaderboard.length; i++)
                             TableRow(
                               children: [
@@ -297,7 +270,7 @@ class CFLeaderboard extends StatelessWidget {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      '${leaderboard[i].rating}',
+                                      '${leaderboard[i].contributions}',
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
                                         fontSize: 16,
@@ -310,13 +283,11 @@ class CFLeaderboard extends StatelessWidget {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      leaderboard[i].rank,
+                                      '${leaderboard[i].repos}',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
-                                        color:
-                                            getTextColor(leaderboard[i].rank),
                                       ),
                                     ),
                                   ),

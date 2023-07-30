@@ -32,6 +32,7 @@ class _ProfileState extends State<Profile>
   int? ccranking;
   int? lcrankingint;
   int? lcglobalranking;
+  int? repos;
   String? cfrank;
   bool noGH = false;
   bool invalidGHUsername = false;
@@ -266,12 +267,18 @@ class _ProfileState extends State<Profile>
         totalContributions = totalCommits;
         isGHLoading = false;
       });
+      var url2 = Uri.parse(
+          'https://api.github.com/users/${userData['ghusername']}/repos');
+      NetWorkHelper netWorkHelper2 = NetWorkHelper(url2);
+      var response2 = await netWorkHelper2.getData();
+      repos = response2.length;
       await FirebaseFirestore.instance
           .collection('rankings')
           .doc(user.uid)
           .update(
         {
           'ghcontributions': totalContributions,
+          'repos': repos,
         },
       );
     } on SocketException catch (e) {

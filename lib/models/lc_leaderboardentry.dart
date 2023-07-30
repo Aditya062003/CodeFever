@@ -1,7 +1,7 @@
 class LCLeaderboardEntry {
   final String userId;
   final int rating;
-  final String rank;
+  final int rank;
 
   LCLeaderboardEntry({
     required this.userId,
