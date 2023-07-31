@@ -115,7 +115,7 @@ class GHLeaderboard extends StatelessWidget {
                             final img = snapshot.data;
                             return CircleAvatar(
                               radius: 65,
-                              backgroundColor: Color(0xffFDCF09),
+                              backgroundColor: const Color(0xffFDCF09),
                               child: CircleAvatar(
                                 radius: 60,
                                 backgroundImage: NetworkImage(img!),

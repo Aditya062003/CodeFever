@@ -66,6 +66,7 @@ class _GithubHeatMapState extends State<GithubHeatMap> {
                           startDate: DateTime.now()
                               .subtract(const Duration(days: 180)),
                           colorMode: ColorMode.color,
+                          defaultColor: Colors.grey[200]!,
                           showText: false,
                           scrollable: true,
                           colorsets: {

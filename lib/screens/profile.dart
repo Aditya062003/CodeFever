@@ -1,3 +1,4 @@
+import 'package:codefever/screens/update_profile.dart';
 import 'package:codefever/widgets/github_heatmap.dart';
 import 'package:codefever/widgets/table.dart';
 import 'package:flutter/material.dart';
@@ -115,7 +116,6 @@ class _ProfileState extends State<Profile>
         ccranking = ccData['currentRating'];
         ccstars = ccData['stars'];
       });
-    
     } on SocketException catch (e) {
       print('Network Error: ${e.message}');
     } catch (e) {
@@ -154,7 +154,7 @@ class _ProfileState extends State<Profile>
           .update(
         {
           'cfranking': cfData['result'][0]['rating'],
-          'cfrank':cfData['result'][0]['rank']
+          'cfrank': cfData['result'][0]['rank']
         },
       );
       setState(() {
@@ -162,7 +162,6 @@ class _ProfileState extends State<Profile>
         cfranking = cfData['result'][0]['rating'];
         cfrank = cfData['result'][0]['rank'];
       });
-      
     } on SocketException catch (e) {
       print('Network Error: ${e.message}');
     } catch (e) {
@@ -193,7 +192,7 @@ class _ProfileState extends State<Profile>
         setState(() {
           isLCLoading = false;
         });
-    
+
         String errorMessage = lcData['errors'][0]['message'];
         print('GraphQL Error: $errorMessage');
 
@@ -294,6 +293,27 @@ class _ProfileState extends State<Profile>
     });
   }
 
+  void refreshProfileData() {
+    setState(() {
+      getUserName();
+      getCCStats();
+      getCFStats();
+      getLCStats();
+      getTotalContributions();
+    });
+  }
+
+  void updateProfile() async {
+    final result =
+        await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return UpdateProfileScreen();
+    }));
+    if (result == true) {
+      // If the result is true, it means the profile was updated, so we refresh the data.
+      refreshProfileData();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -362,7 +382,7 @@ class _ProfileState extends State<Profile>
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: updateProfile,
                       icon: const Icon(Icons.update),
                       label: const Text('Update Profile'),
                       style: ElevatedButton.styleFrom(

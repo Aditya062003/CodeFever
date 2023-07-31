@@ -116,7 +116,7 @@ class CCLeaderboard extends StatelessWidget {
                             final img = snapshot.data;
                             return CircleAvatar(
                               radius: 65,
-                              backgroundColor: Color(0xffFDCF09),
+                              backgroundColor: const Color(0xffFDCF09),
                               child: CircleAvatar(
                                 radius: 60,
                                 backgroundImage: NetworkImage(img!),
@@ -286,7 +286,7 @@ class CCLeaderboard extends StatelessWidget {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      '${leaderboard[i].stars}',
+                                      leaderboard[i].stars,
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
                                         fontSize: 16,

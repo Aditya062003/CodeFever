@@ -26,14 +26,14 @@ class _RankingsScreenState extends State<RankingsScreen> {
   Widget _buildLeaderboard() {
     switch (selectedLeaderboard) {
       case LeaderboardType.CodeChef:
-        return CCLeaderboard();
+        return const CCLeaderboard();
       case LeaderboardType.LeetCode:
-        return LCLeaderboard();
+        return const LCLeaderboard();
       case LeaderboardType.Codeforces:
-        return CFLeaderboard();
+        return const CFLeaderboard();
       case LeaderboardType.GitHub:
       default:
-        return GHLeaderboard();
+        return const GHLeaderboard();
     }
   }
 
@@ -69,7 +69,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
                     'https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png'),
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             GestureDetector(
               onTap: () {
                 setState(() {
@@ -82,7 +82,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
                     'https://store-images.s-microsoft.com/image/apps.48094.14504742535903781.aedbca21-113a-48f4-b001-4204e73b22fc.503f883f-8339-4dc5-8609-81713a59281f'),
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             GestureDetector(
               onTap: () {
                 setState(() {
