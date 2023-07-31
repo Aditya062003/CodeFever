@@ -5,7 +5,8 @@ import 'firebase_options.dart';
 import 'package:codefever/screens/verify_email.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:codefever/screens/splash.dart';
-// import 'package:flutter/services.dart';
+import 'package:codefever/screens/profile.dart';
+
 
 var kColorScheme = ColorScheme.fromSeed(
   seedColor: const Color.fromARGB(255, 84, 171, 253),

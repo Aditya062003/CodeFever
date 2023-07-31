@@ -2,6 +2,7 @@ import 'package:codefever/screens/profile.dart';
 import 'package:codefever/screens/rankings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen(
@@ -19,6 +20,8 @@ class TabsScreen extends StatefulWidget {
 
 class _TabsScreenState extends State<TabsScreen> {
   int _selectedPageIndex = 0;
+  final userid = FirebaseAuth.instance.currentUser!.uid;
+
 
   void _selectPage(int index) {
     setState(() {
@@ -65,6 +68,7 @@ class _TabsScreenState extends State<TabsScreen> {
       return Profile(
         isDarkModeEnabled: widget.isDarkModeEnabled,
         toggleDarkMode: widget.toggleDarkMode,
+        profileUid: userid,
       );
     }
   }

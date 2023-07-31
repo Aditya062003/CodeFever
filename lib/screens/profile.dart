@@ -11,10 +11,12 @@ class Profile extends StatefulWidget {
   const Profile(
       {super.key,
       required this.isDarkModeEnabled,
+      required this.profileUid,
       required this.toggleDarkMode});
 
   final bool isDarkModeEnabled;
   final void Function() toggleDarkMode;
+  final String profileUid;
 
   @override
   State<Profile> createState() {
@@ -235,11 +237,6 @@ class _ProfileState extends State<Profile>
         });
         return;
       }
-      // DocumentSnapshot snapshot = await FirebaseFirestore.instance
-      //     .collection('rankings')
-      //     .doc(user.uid)
-      //     .get();
-
       DateTime currentDate = DateTime.now();
       DateTime threeMonthsAgo = currentDate.subtract(const Duration(days: 180));
       var url = Uri.parse(
@@ -264,6 +261,7 @@ class _ProfileState extends State<Profile>
       }
       setState(() {
         totalContributions = totalCommits;
+        heatmapData = heatmapData;
         isGHLoading = false;
       });
       var url2 = Uri.parse(
@@ -306,7 +304,7 @@ class _ProfileState extends State<Profile>
   void updateProfile() async {
     final result =
         await Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return UpdateProfileScreen();
+      return const UpdateProfileScreen();
     }));
     if (result == true) {
       // If the result is true, it means the profile was updated, so we refresh the data.
