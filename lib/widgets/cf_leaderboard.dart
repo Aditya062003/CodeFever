@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codefever/models/cf_leaderboardentry.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:codefever/screens/others_profile.dart';
 
 class CFLeaderboard extends StatelessWidget {
   const CFLeaderboard({super.key});
@@ -85,7 +87,7 @@ class CFLeaderboard extends StatelessWidget {
                 );
               }).toList();
 
-              leaderboard.sort((a, b) => b.rank.compareTo(a.rank));
+              leaderboard.sort((a, b) => b.rating.compareTo(a.rating));
               final uid1 = leaderboard[0].userId;
               var uid2 = '';
               var uid3 = '';
@@ -281,14 +283,39 @@ class CFLeaderboard extends StatelessWidget {
                                         }
                                         final userData = userSnapshot.data!;
                                         final username = userData['username'];
-                                        return Text(
-                                          username,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        );
+                                        return FirebaseAuth.instance
+                                                    .currentUser!.uid ==
+                                                leaderboard[i].userId
+                                            ? Text(
+                                                username,
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            : GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          OtherUserProfileScreen(
+                                                              profileUid:
+                                                                  leaderboard[i]
+                                                                      .userId),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Text(
+                                                  username,
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              );
                                       },
                                     ),
                                   ),

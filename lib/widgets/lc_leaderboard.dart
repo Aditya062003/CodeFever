@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:codefever/models/lc_leaderboardentry.dart';
+import 'package:codefever/screens/others_profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LCLeaderboard extends StatelessWidget {
   const LCLeaderboard({Key? key}) : super(key: key);
@@ -253,14 +255,39 @@ class LCLeaderboard extends StatelessWidget {
                                         }
                                         final userData = userSnapshot.data!;
                                         final username = userData['username'];
-                                        return Text(
-                                          username,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        );
+                                        return FirebaseAuth.instance
+                                                    .currentUser!.uid ==
+                                                leaderboard[i].userId
+                                            ? Text(
+                                                username,
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            : GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          OtherUserProfileScreen(
+                                                              profileUid:
+                                                                  leaderboard[i]
+                                                                      .userId),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Text(
+                                                  username,
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              );
                                       },
                                     ),
                                   ),
