@@ -287,6 +287,7 @@ class CCLeaderboard extends StatelessWidget {
                                                   username,
                                                   textAlign: TextAlign.center,
                                                   style: const TextStyle(
+                                                    decoration: TextDecoration.underline,
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
                                                   ),

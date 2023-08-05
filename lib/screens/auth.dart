@@ -27,6 +27,15 @@ class _AuthScreenState extends State<AuthScreen> {
   File? _selectedImage;
   var _isAuthenticating = false;
 
+  Future<bool> _checkUsernameExists(String username) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+    return snapshot.docs.isNotEmpty;
+  }
+
   void _submit() async {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
@@ -51,6 +60,20 @@ class _AuthScreenState extends State<AuthScreen> {
         await _firebase.signInWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassword);
       } else {
+        final usernameExists = await _checkUsernameExists(_enteredUsername);
+        if (usernameExists) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Username already exists. Please choose a different one.'),
+            ),
+          );
+          setState(() {
+            _isAuthenticating = false;
+          });
+          return;
+        }
         final userCredentials = await _firebase.createUserWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassword);
         final storageRef = FirebaseStorage.instance

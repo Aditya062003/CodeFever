@@ -1,5 +1,6 @@
 import 'package:codefever/screens/profile.dart';
 import 'package:codefever/screens/rankings.dart';
+import 'package:codefever/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -55,6 +56,10 @@ class _TabsScreenState extends State<TabsScreen> {
               icon: Icon(CupertinoIcons.chart_bar_alt_fill),
               label: 'Rankings',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.search),
+              label: 'Search',
+            ),
           ],
         ),
       ),
@@ -64,6 +69,9 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget _buildPage() {
     if (_selectedPageIndex == 1) {
       return const RankingsScreen();
+    }
+    if (_selectedPageIndex == 2) {
+      return SearchScreen();
     } else {
       return Profile(
         isDarkModeEnabled: widget.isDarkModeEnabled,

@@ -312,6 +312,7 @@ class CFLeaderboard extends StatelessWidget {
                                                   textAlign: TextAlign.center,
                                                   style: const TextStyle(
                                                     fontSize: 16,
+                                                    decoration: TextDecoration.underline,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
