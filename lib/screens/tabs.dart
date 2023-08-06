@@ -1,3 +1,4 @@
+import 'package:codefever/screens/contests.dart';
 import 'package:codefever/screens/profile.dart';
 import 'package:codefever/screens/rankings.dart';
 import 'package:codefever/screens/search_screen.dart';
@@ -60,7 +61,14 @@ class _TabsScreenState extends State<TabsScreen> {
               icon: Icon(CupertinoIcons.search),
               label: 'Search',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.bell),
+              label: 'Contests',
+            )
           ],
+          unselectedItemColor: Colors.grey,
+          selectedItemColor: Colors.blue,
+          backgroundColor: Colors.black,
         ),
       ),
     );
@@ -72,6 +80,9 @@ class _TabsScreenState extends State<TabsScreen> {
     }
     if (_selectedPageIndex == 2) {
       return SearchScreen();
+    }
+    if (_selectedPageIndex == 3) {
+      return ContestScreen();
     } else {
       return Profile(
         isDarkModeEnabled: widget.isDarkModeEnabled,
